@@ -27,6 +27,7 @@
 #include "bootloader.h"
 #include "internal_flash.h"
 #include "api.h"
+#include "application_config.h"
 
 
 /* ****************************************************************************
@@ -174,7 +175,7 @@ static uint8_t _normal_mode(void)
         return 1;
     }
     
-    if(!ENCODER2_PB_PIN) //Button is pressed
+    if(ENCODER2_PB_PIN) //Button is pressed
     {
         //Bootloader mode if pushbutton is pressed
         return 0;

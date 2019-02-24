@@ -8,6 +8,7 @@
 #include "os.h"
 #include "spi.h"
 #include "bootloader.h"
+#include "application_config.h"
 
 const char start_line1[] = "Bootloader Mode";
 const char start_line2[] = "Version ";

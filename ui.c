@@ -6,6 +6,7 @@
 #include "i2c.h"
 #include "ui.h"
 #include "internal_flash.h"
+#include "application_config.h"
 
 /* ****************************************************************************
  * Variables definitions
@@ -156,7 +157,8 @@ void ui_run(void)
 
 		case USER_INTERFACE_STATUS_STARTUP_4:
             //Send init sequence
-            i2c_display_send_init_sequence();
+            i2c_display_init();
+            //i2c_display_send_init_sequence();
             //Turn backlight on
             DISP_BACKLIGHT_PIN = 1;
             //Enable rotary encoder inputs

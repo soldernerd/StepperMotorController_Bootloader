@@ -59,7 +59,6 @@ typedef struct
     spiPolarity_t spiPolarity;
     //I2C settings
     externalMode_t i2cMode;
-    i2cFrequency_t i2cFrequency;
     uint8_t i2cSlaveModeSlaveAddress;
     uint8_t i2cMasterModeSlaveAddress;
 } communicationSettings_t;

@@ -10,6 +10,7 @@
 #include "bootloader.h"
 #include "fat16.h"
 #include "flash.h"
+#include "application_config.h"
 
 
 

@@ -154,7 +154,7 @@ void system_minimal_init(void)
 void system_minimal_init_undo(void)
 {
     //Reset and disable I2C module
-    i2c_reset();
+    //i2c_reset();
     
     //Undo pushbutton configuration
     ENCODER2_PB_TRIS = PIN_INPUT;
