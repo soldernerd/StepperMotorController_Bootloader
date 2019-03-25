@@ -15,6 +15,13 @@
 #define BOOTLOADER_SIGNATURE 0x4B16
 
 /*
+ * Language
+ */
+
+#define LANGUAGE_GERMAN
+//#define LANGUAGE_ENGLISH
+
+/*
  * Firmware version
  */
 

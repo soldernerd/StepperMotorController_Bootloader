@@ -10,6 +10,29 @@
 #include "bootloader.h"
 #include "application_config.h"
 
+//Custom characters
+#define DISPLAY_CC_VERTICALBAR_ADDRESS 0x00
+#define DISPLAY_CC_VERTICALBAR_BIT_PATTERN {0b00000100,0b00000100,0b00000100,0b00000100,0b00000100,0b00000100,0b00000100,0b00000100}
+const uint8_t bit_pattern_verticalbar[8] = DISPLAY_CC_VERTICALBAR_BIT_PATTERN;
+
+#define DISPLAY_CC_DEGREE_ADDRESS 0x01
+#define DISPLAY_CC_DEGREE_BIT_PATTERN {0b00011000, 0b00011000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000}
+const uint8_t bit_pattern_degree[8] = DISPLAY_CC_DEGREE_BIT_PATTERN;
+
+#define DISPLAY_CC_ae_ADDRESS 0x02
+#define DISPLAY_CC_ae_BIT_PATTERN {0b00001010, 0b00000000, 0b00001110, 0b00000001, 0b00001111, 0b00010001, 0b00001111, 0b00000000}
+const uint8_t bit_pattern_ae[8] = DISPLAY_CC_ae_BIT_PATTERN;
+
+#define DISPLAY_CC_ue_ADDRESS 0x03
+#define DISPLAY_CC_ue_BIT_PATTERN {0b00001010, 0b00000000, 0b00010001, 0b00010001, 0b00010001, 0b00010011, 0b00001101, 0b00000000}
+const uint8_t bit_pattern_ue[8] = DISPLAY_CC_ue_BIT_PATTERN;
+
+#define DISPLAY_CC_oe_ADDRESS 0x04
+#define DISPLAY_CC_oe_BIT_PATTERN {0b00001010, 0b00000000, 0b00001110, 0b00010001, 0b00010001, 0b00010001, 0b00001110, 0b00000000}
+const uint8_t bit_pattern_oe[8] = DISPLAY_CC_oe_BIT_PATTERN;
+
+#ifdef LANGUAGE_ENGLISH
+
 const char start_line1[] = "Bootloader Mode";
 const char start_line2[] = "Version ";
 const char start_line3[] = "";
@@ -61,6 +84,77 @@ const char suspended_line4[] = "Press to resume";
 
 const char reboot_line1[] = "Rebooting...";
 
+#endif /*LANGUAGE_ENGLISH*/
+
+#ifdef LANGUAGE_GERMAN
+
+const char start_line1[] = "Bootloader Modus";
+const char start_line2[] = "Version ";
+const char start_line3[] = "";
+const char start_line4[] = "soldernerd.com";
+
+const char search_line1[] = "Bootloader Modus";
+const char search_line2[] = "Suche File";
+const char search_line3[] = "FIRMWARE.HEX auf";
+const char search_line4[] = "USB-Laufwerk...";
+
+const char found_line1[] = "Bootloader Modus";
+const char found_line2[] = "File gefunden";
+//const char found_line3[] = "Grösse: ";
+const char found_line3[] = {'G','r',DISPLAY_CC_oe_ADDRESS,'s','s','e',':',0};
+const char found_line3b[] = " Bytes";
+//const char found_line4[] = "Drücken zm verwenden";
+const char found_line4[] = {'D','r',DISPLAY_CC_ue_ADDRESS,'c','k','e','n',' ','z','m',' ','v','e','r','w','e','n','d','e','n',0};
+
+const char verify_line1[] = "Bootloader Modus";
+//const char verify_line2[] = "Prüfe File...";
+const char verify_line2[] = {'P','r',DISPLAY_CC_ue_ADDRESS,'f','e',' ','F','i','l','e','.','.','.',0};
+const char verify_line3[] = "Eintrag";
+
+const char checked_line1[] = "Bootloader Modus";
+//const char checked_line2[] = "File geprüft";
+const char checked_line2[] = {'F','i','l','e',' ','g','e','p','r',DISPLAY_CC_ue_ADDRESS,'f','t',0};
+//const char checked_line3[] = "Einträge";
+const char checked_line3[] = {'E','i','n','t','r',DISPLAY_CC_ae_ADDRESS,'g','e',0};
+//const char checked_line4[] = "Drücken zum program.";
+const char checked_line4[] = {'D','r',DISPLAY_CC_ue_ADDRESS,'c','k','e','n',' ','z','u','m',' ','p','r','o','g','r','a','m','.',0};
+
+const char failed_line1[] = "Bootloader Modus";
+const char failed_line2[] = "File fehlerhaft";
+const char failed_line3_startCode[] = "Fehlender Start Code";
+//const char failed_line3_noNextRecord[] = "Plötzliches Fileende";
+const char failed_line3_noNextRecord[] = {'P','l',DISPLAY_CC_oe_ADDRESS,'t','z','l','i','c','h','e','s',' ','F','i','l','e','e','n','d','e',0};
+//const char failed_line3_checksum[] = "Prüfsumme falsch";
+const char failed_line3_checksum[] = {'P','r',DISPLAY_CC_ue_ADDRESS,'f','s','u','m','m','e',' ','f','a','l','s','c','h',0};
+const char failed_line3_dataTooLong[] = "Daten zu lange";
+//const char failed_line3_addressRange[] = "Addresse unzulässig";
+const char failed_line3_addressRange[] = {'A','d','d','r','e','s','s','e',' ','u','n','z','u','l',DISPLAY_CC_ae_ADDRESS,'s','s','i','g',0};
+const char failed_line4[] = "Eintrag ";
+
+const char programming_line1[] = "Bootloader Modus";
+const char programming_line2[] = "Programmiere Flash";
+const char programming_line3[] = "Eintrag ";
+const char programming_line4[] = "Geschr. Seiten: ";
+
+const char done_line1[] = "Bootloader Modus";
+const char done_line2[] = "Fertig!";
+const char done_line3[] = "Geschr. Seiten: ";
+//const char done_line4[] = "Drücken zum Neustart";
+const char done_line4[] = {'D','r',DISPLAY_CC_ue_ADDRESS,'c','k','e','n',' ','z','u','m',' ','N','e','u','s','t','a','r','t',0};
+
+const char suspended_line1[] = "Bootloader Modus";
+const char suspended_line2[] = "Suspendiert";
+const char suspended_line3[] = "";
+//const char suspended_line4[] = "Drücken z Fortfahren";
+const char suspended_line4[] = {'D','r',DISPLAY_CC_ue_ADDRESS,'c','k','e','n',' ','z',' ','F','o','r','t','f','a','h','r','e','n',0};
+
+const char reboot_line1[] = "Neustart...";
+
+#endif /*LANGUAGE_GERMAN*/
+
+
+
+
 char display_content[4][20];
 
 static void _display_start(void);
@@ -73,6 +167,16 @@ static void _display_programming(void);
 static void _display_done(void);
 static void _display_rebooting(void);
 static void _display_suspended(void);
+
+void display_init(void)
+{
+    i2c_display_init();
+    i2c_display_program_custom_character(DISPLAY_CC_VERTICALBAR_ADDRESS, bit_pattern_verticalbar); 
+    i2c_display_program_custom_character(DISPLAY_CC_DEGREE_ADDRESS, bit_pattern_degree);
+    i2c_display_program_custom_character(DISPLAY_CC_ae_ADDRESS, bit_pattern_ae);
+    i2c_display_program_custom_character(DISPLAY_CC_ue_ADDRESS, bit_pattern_ue);
+    i2c_display_program_custom_character(DISPLAY_CC_oe_ADDRESS, bit_pattern_oe);
+}
 
 uint8_t display_get_character(uint8_t line, uint8_t position)
 {
@@ -321,13 +425,28 @@ void display_prepare(uint8_t mode)
     switch((os.timeSlot>>5)&0b11)
     {
         case 3:
+            #ifdef LANGUAGE_ENGLISH
             display_content[0][17] = '.';
+            #endif /*LANGUAGE_ENGLISH*/
+            #ifdef LANGUAGE_GERMAN
+            display_content[0][18] = '.';
+            #endif /*LANGUAGE_GERMAN*/
             //fall through
         case 2:
+            #ifdef LANGUAGE_ENGLISH
             display_content[0][16] = '.';
+            #endif /*LANGUAGE_ENGLISH*/
+            #ifdef LANGUAGE_GERMAN
+            display_content[0][17] = '.';
+            #endif /*LANGUAGE_GERMAN*/
             //fall through
         case 1:
+            #ifdef LANGUAGE_ENGLISH
             display_content[0][15] = '.';
+            #endif /*LANGUAGE_ENGLISH*/
+            #ifdef LANGUAGE_GERMAN
+            display_content[0][16] = '.';
+            #endif /*LANGUAGE_GERMAN*/
             //fall through     
     }
     
@@ -395,7 +514,7 @@ static void _display_found(void)
     while(found_line3[cntr])
         display_content[2][cntr] = found_line3[cntr++];
     start = cntr;
-    start += _display_itoa_u32(bootloader_get_file_size(), &display_content[2][cntr]);
+    start += _display_itoa_u32(bootloader_get_file_size(), &display_content[2][cntr+1]);
     cntr = 0;
     while(found_line3b[cntr])
         display_content[2][start+cntr] = found_line3b[cntr++];

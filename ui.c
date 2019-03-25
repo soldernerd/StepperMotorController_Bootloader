@@ -4,6 +4,7 @@
 #include "hardware_config.h"
 #include "os.h"
 #include "i2c.h"
+#include "display.h"
 #include "ui.h"
 #include "internal_flash.h"
 #include "application_config.h"
@@ -26,60 +27,67 @@ static void _ui_encoder(void)
     switch(os.display_mode)
     {
         case DISPLAY_MODE_BOOTLOADER_START:
-            if(os.buttonCount>0)
+            if(os.button1>0 || os.button2>0)
             {
-                os.buttonCount = 0;
+                os.button1 = 0;
+                os.button2 = 0;
             }
             break;
             
         case DISPLAY_MODE_BOOTLOADER_SEARCH:
-            if(os.buttonCount>0)
+            if(os.button1>0 || os.button2>0)
             {
-                os.buttonCount = 0;
+                os.button1 = 0;
+                os.button2 = 0;;
             }
             break;
             
         case DISPLAY_MODE_BOOTLOADER_FILE_FOUND:
-            if(os.buttonCount>0)
+            if(os.button1>0 || os.button2>0)
             {
                 os.bootloader_mode = BOOTLOADER_MODE_FILE_VERIFYING;
                 os.display_mode = DISPLAY_MODE_BOOTLOADER_FILE_VERIFYING;
-                os.buttonCount = 0;
+                os.button1 = 0;
+                os.button2 = 0;
             }
             break;
             
         case DISPLAY_MODE_BOOTLOADER_FILE_VERIFYING:
-            if(os.buttonCount>0)
+            if(os.button1>0 || os.button2>0)
             {
-                os.buttonCount = 0;
+                os.button1 = 0;
+                os.button2 = 0;
             }
             break;
             
         case DISPLAY_MODE_BOOTLOADER_CHECK_FAILED:
-            if(os.buttonCount>0)
+            if(os.button1>0 || os.button2>0)
             {
-                os.buttonCount = 0;
+                os.button1 = 0;
+                os.button2 = 0;
             }
             break;
             
         case DISPLAY_MODE_BOOTLOADER_CHECK_COMPLETE:
-            if(os.buttonCount>0)
+            if(os.button1>0 || os.button2>0)
             {
                 os.bootloader_mode = BOOTLOADER_MODE_PROGRAMMING;
                 os.display_mode = DISPLAY_MODE_BOOTLOADER_PROGRAMMING;
-                os.buttonCount = 0;
+                os.button1 = 0;
+                os.button2 = 0;
             }
             break;
 
         case BOOTLOADER_MODE_PROGRAMMING:
-            if(os.buttonCount>0)
+            if(os.button1>0 || os.button2>0)
             {
-                os.buttonCount = 0;
+                os.button1 = 0;
+                os.button2 = 0;
             }
             break; 
             
         case DISPLAY_MODE_BOOTLOADER_DONE:
-            if(os.buttonCount>0)
+            if(os.button1>0 || os.button2>0)
             {
                 i2c_eeprom_writeByte(EEPROM_BOOTLOADER_BYTE_ADDRESS, BOOTLOADER_BYTE_FORCE_NORMAL_MODE);
                 system_delay_ms(10); //ensure data has been written before rebooting
@@ -88,11 +96,12 @@ static void _ui_encoder(void)
             break;
             
         case DISPLAY_MODE_BOOTLOADER_SUSPENDED:
-            if(os.buttonCount>0)
+            if(os.button1>0 || os.button2>0)
             {
                 os.bootloader_mode = BOOTLOADER_MODE_SEARCH;
                 os.display_mode = DISPLAY_MODE_BOOTLOADER_SEARCH;
-                os.buttonCount = 0;
+                os.button1 = 0;
+                os.button2 = 0;
             }
             break; 
     }    
@@ -122,10 +131,11 @@ void ui_run(void)
 	{
 		case USER_INTERFACE_STATUS_OFF:
             //Wake up if button has been pressed
-			if (os.buttonCount!=0)
+			if (os.button1!=0 || os.button2!=0)
 			{
                 ui_init();
-                os.buttonCount = 0;
+                os.button1 = 0;
+                os.button2 = 0;
 			}
 			break;
 
@@ -157,7 +167,8 @@ void ui_run(void)
 
 		case USER_INTERFACE_STATUS_STARTUP_4:
             //Send init sequence
-            i2c_display_init();
+            //i2c_display_init();
+            display_init();
             //i2c_display_send_init_sequence();
             //Turn backlight on
             DISP_BACKLIGHT_PIN = 1;
@@ -178,7 +189,7 @@ void ui_run(void)
                     os.display_mode = DISPLAY_MODE_BOOTLOADER_SEARCH;
                 }
             }
-			if (os.encoderCount==0 && os.buttonCount==0)
+			if (os.encoder1Count==0 && os.button1==0 && os.encoder2Count==0 && os.button2==0)
 			{
                 if(system_ui_inactive_count<0xFFFF)
                     ++system_ui_inactive_count;

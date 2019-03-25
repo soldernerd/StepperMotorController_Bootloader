@@ -186,12 +186,14 @@ static void _fill_buffer_get_status(uint8_t *outBuffer)
     outBuffer[7] = ui_get_status();
     
     //Entire os struct
-    outBuffer[8] = os.encoderCount;
-    outBuffer[9] = os.buttonCount;
-    outBuffer[10] = os.timeSlot;
-    outBuffer[11] = os.done;
-    outBuffer[12] = os.bootloader_mode;
-    outBuffer[13] = os.display_mode;
+    outBuffer[8] = os.encoder1Count;
+    outBuffer[9] = os.button1;
+    outBuffer[10] = os.encoder2Count;
+    outBuffer[11] = os.button2;
+    outBuffer[12] = os.timeSlot;
+    outBuffer[13] = os.done;
+    outBuffer[14] = os.bootloader_mode;
+    outBuffer[15] = os.display_mode;
 }
 
 //Fill buffer with display content
@@ -319,15 +321,15 @@ static void _parse_command_short(uint8_t cmd)
             break;
                 
         case COMMAND_ENCODER_CCW:
-            --os.encoderCount;
+            --os.encoder1Count;
             break;
             
         case COMMAND_ENCODER_CW:
-            ++os.encoderCount;
+            ++os.encoder1Count;
             break;
             
         case COMMAND_ENCODER_PUSH:
-            ++os.buttonCount;
+            ++os.button1;
             break;
     }
 }

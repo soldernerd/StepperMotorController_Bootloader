@@ -66,8 +66,10 @@ typedef struct
 
 typedef struct
 {
-    int8_t encoderCount;
-    int8_t buttonCount;
+    int8_t encoder1Count;
+    int8_t button1;
+    int8_t encoder2Count;
+    int8_t button2;
     uint8_t timeSlot;
     uint8_t done;
     bootloaderMode_t bootloader_mode;

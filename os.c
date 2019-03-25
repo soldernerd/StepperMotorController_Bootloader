@@ -15,6 +15,15 @@
 #define TIMER0_LOAD_HIGH_48MHZ 0xD1
 #define TIMER0_LOAD_LOW_48MHZ 0x20
 
+//Min/Max encoder count
+#define COUNT_MIN -128
+#define COUNT_MAX 127
+
+//Save last encoder status
+uint8_t enc1;
+uint8_t enc2;
+
+
 
 //There are no interrupts but we still use the timer and interrupt flag
 void timer_pseudo_isr(void)
@@ -30,34 +39,99 @@ void timer_pseudo_isr(void)
     TMR0H = TIMER0_LOAD_HIGH_48MHZ;
     TMR0L = TIMER0_LOAD_LOW_48MHZ;
     ++os.timeSlot;
-    //os.timeSlot &= TIMESLOT_MASK;
     os.done = 0;
     INTCONbits.T0IF = 0;
-
-    //Push button
-    if(INTCON3bits.INT1IF)
+    
+    //Take care of encoders
+    if(enc1 != (ENCODER1_PORT&ENCODER1_MASK))
     {
-        ++os.buttonCount;
-        INTCON3bits.INT1IF = 0;
+        //B rising while A high -> +
+        if(ENCODER1_B_PIN && ENCODER1_A_PIN && (!(enc1&ENCODER1_B_MASK)))
+        {
+            if(os.encoder1Count<COUNT_MAX)
+            {
+                ++os.encoder1Count;
+            }
+        }
+        //A rising while B high -> -
+        if(ENCODER1_A_PIN && ENCODER1_B_PIN && (!(enc1&ENCODER1_A_MASK)))
+        {
+            if(os.encoder1Count>COUNT_MIN)
+            {
+                --os.encoder1Count;
+            }
+        }
+        //Pushbutton pressed
+        if(ENCODER1_PB_PIN && (!(enc1&ENCODER1_PB_MASK)))
+        {
+            os.button1 = 1;
+        }
+        //Pushbutton released
+        if((!ENCODER1_PB_PIN) && (enc1&ENCODER1_PB_MASK))
+        {
+            os.button1 = -1;
+        }
+        //Save current state
+        enc1 = ENCODER1_PORT & ENCODER1_MASK; 
     }
     
-    //Encoder 2
-    if(INTCON3bits.INT2IF)
+    if(enc2 != (ENCODER2_PORT&ENCODER2_MASK))
     {
-        if(!ENCODER1_B_PIN)
+        //B rising while A high -> +
+        if(ENCODER2_B_PIN && ENCODER2_A_PIN && (!(enc2&ENCODER2_B_MASK)))
         {
-            --os.encoderCount;
+            if(os.encoder2Count<COUNT_MAX)
+            {
+                ++os.encoder2Count;
+            }
         }
-        INTCON3bits.INT2IF = 0;
-    }   
-    if(INTCON3bits.INT3IF)
-    {
-        if(!ENCODER1_A_PIN)
+        //A rising while B high -> -
+        if(ENCODER2_A_PIN && ENCODER2_B_PIN && (!(enc2&ENCODER2_A_MASK)))
         {
-            ++os.encoderCount;
+            if(os.encoder2Count>COUNT_MIN)
+            {
+                --os.encoder2Count;
+            }
         }
-        INTCON3bits.INT3IF = 0;
+        //Pushbutton pressed
+        if(ENCODER2_PB_PIN && (!(enc2&ENCODER2_PB_MASK)))
+        {
+            os.button2 = 1;
+        }
+        //Pushbutton released
+        if((!ENCODER2_PB_PIN) && (enc2&ENCODER2_PB_MASK))
+        {
+            os.button2 = -1;
+        }
+        //Save current state
+        enc2 = ENCODER2_PORT & ENCODER2_MASK;
     }
+    
+
+//    //Push button 2
+//    if(INTCON3bits.INT1IF)
+//    {
+//        ++os.buttonCount;
+//        INTCON3bits.INT1IF = 0;
+//    }
+//    
+//    //Encoder 2
+//    if(INTCON3bits.INT2IF)
+//    {
+//        if(!ENCODER1_B_PIN)
+//        {
+//            --os.encoderCount;
+//        }
+//        INTCON3bits.INT2IF = 0;
+//    }   
+//    if(INTCON3bits.INT3IF)
+//    {
+//        if(!ENCODER1_A_PIN)
+//        {
+//            ++os.encoderCount;
+//        }
+//        INTCON3bits.INT3IF = 0;
+//    }
 }
 
 //Crystal is 8MHz but our clock is 48MHz so the standard __delay_ms() is too fast
@@ -73,24 +147,28 @@ void system_delay_ms(uint8_t ms)
 
 static void _system_encoder_init(void)
 {
-    PPSUnLock();
-    RPINR1 = ENCODER2_PB_PPS;
-    RPINR3 = ENCODER2_A_PPS;
-    RPINR2 = ENCODER2_B_PPS;
-    PPSUnLock()
-
-    //We can't use interrupts, just use the flags
-    INTCON2bits.INTEDG1 = 0; //0=falling
-    INTCON3bits.INT1IF = 0;
+//    PPSUnLock();
+//    RPINR1 = ENCODER2_PB_PPS;
+//    RPINR3 = ENCODER2_A_PPS;
+//    RPINR2 = ENCODER2_B_PPS;
+//    PPSUnLock()
+//
+//    //We can't use interrupts, just use the flags
+//    INTCON2bits.INTEDG1 = 0; //0=falling
+//    INTCON3bits.INT1IF = 0;
+//    
+//    INTCON2bits.INTEDG2 = 1; //1=rising
+//    INTCON3bits.INT2IF = 0;
+//    
+//    INTCON2bits.INTEDG3 = 1; //1=rising
+//    INTCON3bits.INT3IF = 0;
     
-    INTCON2bits.INTEDG2 = 1; //1=rising
-    INTCON3bits.INT2IF = 0;
-    
-    INTCON2bits.INTEDG3 = 1; //1=rising
-    INTCON3bits.INT3IF = 0;
-    
-    os.encoderCount = 0;
-    os.buttonCount = 0;
+    enc1 = ENCODER1_PORT & ENCODER1_MASK; 
+    enc2 = ENCODER2_PORT & ENCODER2_MASK;
+    os.encoder1Count = 0;
+    os.encoder2Count = 0;
+    os.button1 = 0;
+    os.button2 = 0;
 }
 
 
@@ -101,11 +179,14 @@ void system_encoder_enable(void)
     INTCON3bits.INT3IF = 0; 
     
     //Reset encoder count
-    os.encoderCount = 0;
+    os.encoder1Count = 0;
+    os.encoder1Count = 0;
+    os.button1 = 0;
+    os.button2 = 0;
     
-    //Enable Interrupts  
-    INTCON3bits.INT2IE = 1;
-    INTCON3bits.INT3IE = 1;
+//    //Enable Interrupts  
+//    INTCON3bits.INT2IE = 1;
+//    INTCON3bits.INT3IE = 1;
 }
 
 
@@ -139,7 +220,9 @@ static void _system_timer0_init(void)
 //Just configure the bare minimum needed to determine if we should jump to main program
 void system_minimal_init(void)
 {
-    //Configure pushbutton pin as digital input
+    //Configure pushbuttons pin as digital input
+    ENCODER1_PB_TRIS = PIN_INPUT;
+    ENCODER1_PB_ANCON = PIN_DIGITAL;
     ENCODER2_PB_TRIS = PIN_INPUT;
     ENCODER2_PB_ANCON = PIN_DIGITAL;
     
@@ -157,6 +240,8 @@ void system_minimal_init_undo(void)
     //i2c_reset();
     
     //Undo pushbutton configuration
+    ENCODER1_PB_TRIS = PIN_INPUT;
+    ENCODER1_PB_ANCON = PIN_ANALOG;
     ENCODER2_PB_TRIS = PIN_INPUT;
     ENCODER2_PB_ANCON = PIN_ANALOG;
 }
@@ -193,10 +278,17 @@ void system_full_init(void)
   
     //Configure encoder pins as digital inputs
     ENCODER1_A_TRIS = PIN_INPUT;
+    ENCODER1_A_ANCON = PIN_DIGITAL;
     ENCODER1_B_TRIS = PIN_INPUT;
+    ENCODER1_B_ANCON = PIN_DIGITAL;
     ENCODER1_PB_TRIS = PIN_INPUT;
+    ENCODER1_PB_ANCON = PIN_DIGITAL;
     ENCODER2_A_TRIS = PIN_INPUT;
+    ENCODER2_A_ANCON = PIN_DIGITAL;
     ENCODER2_B_TRIS = PIN_INPUT;
+    ENCODER2_B_ANCON = PIN_DIGITAL;
+    ENCODER2_PB_TRIS = PIN_INPUT;
+    ENCODER2_PB_ANCON = PIN_DIGITAL;
     
     //Initialize variables
     os.bootloader_mode = BOOTLOADER_MODE_SEARCH;
