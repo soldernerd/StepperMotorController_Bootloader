@@ -75,6 +75,7 @@ typedef struct
     bootloaderMode_t bootloader_mode;
     displayMode_t display_mode;
     communicationSettings_t communicationSettings;
+    uint8_t beep_count;
 } os_t;
 
 

@@ -18,8 +18,8 @@
  * Language
  */
 
-#define LANGUAGE_GERMAN
-//#define LANGUAGE_ENGLISH
+//#define LANGUAGE_GERMAN
+#define LANGUAGE_ENGLISH
 
 /*
  * Firmware version
@@ -27,7 +27,7 @@
 
 #define FIRMWARE_VERSION_MAJOR 0x00
 #define FIRMWARE_VERSION_MINOR 0x05
-#define FIRMWARE_VERSION_FIX 0x00
+#define FIRMWARE_VERSION_FIX 0x01
 
 /*
  * Application specific settings

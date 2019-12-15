@@ -19,6 +19,10 @@
 #define COUNT_MIN -128
 #define COUNT_MAX 127
 
+//Beep duration
+#define BEEP_DURATION_ROTATE 5
+#define BEEP_DURATION_PRESS 5
+
 //Save last encoder status
 uint8_t enc1;
 uint8_t enc2;
@@ -51,6 +55,11 @@ void timer_pseudo_isr(void)
             if(os.encoder1Count<COUNT_MAX)
             {
                 ++os.encoder1Count;
+                if(BEEP_DURATION_ROTATE)
+                {
+                    BUZZER_ENABLE_PIN = 1;
+                    os.beep_count = BEEP_DURATION_ROTATE; 
+                }
             }
         }
         //A rising while B high -> -
@@ -59,17 +68,32 @@ void timer_pseudo_isr(void)
             if(os.encoder1Count>COUNT_MIN)
             {
                 --os.encoder1Count;
+                if(BEEP_DURATION_ROTATE)
+                {
+                    BUZZER_ENABLE_PIN = 1;
+                    os.beep_count = BEEP_DURATION_ROTATE; 
+                }
             }
         }
         //Pushbutton pressed
         if(ENCODER1_PB_PIN && (!(enc1&ENCODER1_PB_MASK)))
         {
             os.button1 = 1;
+            if(BEEP_DURATION_PRESS)
+            {
+                BUZZER_ENABLE_PIN = 1;
+                os.beep_count = BEEP_DURATION_PRESS; 
+            }
         }
         //Pushbutton released
         if((!ENCODER1_PB_PIN) && (enc1&ENCODER1_PB_MASK))
         {
             os.button1 = -1;
+            if(BEEP_DURATION_PRESS)
+            {
+                BUZZER_ENABLE_PIN = 1;
+                os.beep_count = BEEP_DURATION_PRESS; 
+            }
         }
         //Save current state
         enc1 = ENCODER1_PORT & ENCODER1_MASK; 
@@ -83,6 +107,11 @@ void timer_pseudo_isr(void)
             if(os.encoder2Count<COUNT_MAX)
             {
                 ++os.encoder2Count;
+                if(BEEP_DURATION_ROTATE)
+                {
+                    BUZZER_ENABLE_PIN = 1;
+                    os.beep_count = BEEP_DURATION_ROTATE; 
+                }
             }
         }
         //A rising while B high -> -
@@ -91,20 +120,45 @@ void timer_pseudo_isr(void)
             if(os.encoder2Count>COUNT_MIN)
             {
                 --os.encoder2Count;
+                if(BEEP_DURATION_ROTATE)
+                {
+                    BUZZER_ENABLE_PIN = 1;
+                    os.beep_count = BEEP_DURATION_ROTATE; 
+                }
             }
         }
         //Pushbutton pressed
         if(ENCODER2_PB_PIN && (!(enc2&ENCODER2_PB_MASK)))
         {
             os.button2 = 1;
+            if(BEEP_DURATION_PRESS)
+            {
+                BUZZER_ENABLE_PIN = 1;
+                os.beep_count = BEEP_DURATION_PRESS; 
+            }
         }
         //Pushbutton released
         if((!ENCODER2_PB_PIN) && (enc2&ENCODER2_PB_MASK))
         {
             os.button2 = -1;
+            if(BEEP_DURATION_PRESS)
+            {
+                BUZZER_ENABLE_PIN = 1;
+                os.beep_count = BEEP_DURATION_PRESS; 
+            }
         }
         //Save current state
         enc2 = ENCODER2_PORT & ENCODER2_MASK;
+    }
+    
+    //Turn off beep after beep time has elapsed
+    if(os.beep_count>0)
+    {
+        --os.beep_count;
+        if(os.beep_count==0)
+        {
+            BUZZER_ENABLE_PIN = 0;
+        }
     }
     
 
@@ -183,6 +237,9 @@ void system_encoder_enable(void)
     os.encoder1Count = 0;
     os.button1 = 0;
     os.button2 = 0;
+    
+    //Reset beep
+    os.beep_count = 0;
     
 //    //Enable Interrupts  
 //    INTCON3bits.INT2IE = 1;

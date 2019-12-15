@@ -513,8 +513,7 @@ static void _display_found(void)
     cntr = 0;
     while(found_line3[cntr])
         display_content[2][cntr] = found_line3[cntr++];
-    start = cntr;
-    start += _display_itoa_u32(bootloader_get_file_size(), &display_content[2][cntr+1]);
+    start = _display_itoa_u32(bootloader_get_file_size(), &display_content[2][cntr]) + 6;
     cntr = 0;
     while(found_line3b[cntr])
         display_content[2][start+cntr] = found_line3b[cntr++];

@@ -25,7 +25,8 @@ void i2c_init(void)
 {
     I2C_SDA_TRIS = PIN_INPUT;
     I2C_SCL_TRIS = PIN_INPUT;
-    SSP1STATbits.SMP = 0; //Enable slew rate control
+    //SSP1STATbits.SMP = 0; //Enable slew rate control
+    SSP1STATbits.SMP = 1; //Disable slew rate control
     SSP1STATbits.CKE = 0; //Disable SMBus inputs
     //SSP1ADD = 29; //400kHz at 48MHz system clock
     SSP1ADD = 119; //100kHz at 48MHz system clock
